@@ -1,4 +1,4 @@
-# 寺務系統後端 server
+# typescript-express-sample
 ## 開始使用
 ### 安裝所需套件
 ```js
