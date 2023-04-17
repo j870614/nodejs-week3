@@ -4,6 +4,9 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import path from "path";
 
+// 連結 mongoDB
+import './connections';
+
 import { indexRouter } from "./routes";
 // **** Variables **** //
 
