@@ -1,20 +1,21 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import { Posts } from '../model/posts';
 import { PostInterface } from '../model/interfaces/PostInterface';
-import { PostsControllersInterface } from '../model/interfaces/PostsControllersInterface';
 import { handleError } from "../service/handleError";
 import { handleSuccess } from '../service/handleSuccess';
-import { CLIENT_RENEG_WINDOW } from 'tls';
 
+export class PostsControllers {
+  public static getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const allPosts: PostInterface[] = await Posts.find();
+      handleSuccess(res, allPosts);
+      next();
+    } catch (err) {
+      handleError({res, err});
+    }
+  }
 
-
-export const PostsControllers: PostsControllersInterface = {
-  getPosts: async (req: Request, res: Response ): Promise<void> => {
-    const allPosts: PostInterface[] = await Posts.find();
-    // handleSuccess<PostInterface[]>(res, allPosts);
-    handleSuccess(res, allPosts);
-  },
-  createPosts: async (req: Request, res: Response ): Promise<void> => {
+  public static createPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { body }: { body: PostInterface } = req;
       const { name, content, tags, type } = body;
@@ -33,8 +34,9 @@ export const PostsControllers: PostsControllersInterface = {
     } catch (err) {
       handleError({res, err});
     }
-  },
-  deletePost: async (req: Request, res: Response ): Promise<void> => {
+  }
+
+  public static deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } : { id?: string } = req.params;
     try {
       const post = await Posts.findByIdAndDelete(id);
@@ -53,8 +55,9 @@ export const PostsControllers: PostsControllersInterface = {
         msg: '無此 id',
       })
     }
-  },
-  deleteAllPosts: async (req: Request, res: Response ): Promise<void> => {
+  }
+
+  public static deleteAllPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await Posts.deleteMany();
       handleSuccess<null> (res, null);
@@ -64,8 +67,9 @@ export const PostsControllers: PostsControllersInterface = {
         err,
       });
     }
-  },
-  updatePost: async (req: Request, res: Response ): Promise<void> => {
+  }
+
+  public static updatePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id }: { id?: string  } = req.params;
     const { body }: { body?: string } = req;
     console.log(body);
@@ -81,5 +85,5 @@ export const PostsControllers: PostsControllersInterface = {
       console.log(error);
       handleError({res});
     }
-  },
-};
+  }
+}
