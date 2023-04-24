@@ -1,15 +1,12 @@
 import { Response, Request } from 'express';
 import { Posts } from '../model/posts';
 import { PostInterface } from '../model/interfaces/PostInterface';
+import { PostsControllersInterface } from '../model/interfaces/PostsControllersInterface';
 import { handleError } from "../service/handleError";
 import { handleSuccess } from '../service/handleSuccess';
+import { CLIENT_RENEG_WINDOW } from 'tls';
 
-interface PostsControllersInterface {
-  getPosts(req: Request, res: Response): Promise<void>;
-  createPosts(req: Request, res: Response): Promise<void>;
-  deletePost(req: Request, res: Response): Promise<void>;
-  deleteAllPosts(req: Request, res: Response): Promise<void>;
-};
+
 
 export const PostsControllers: PostsControllersInterface = {
   getPosts: async (req: Request, res: Response ): Promise<void> => {
@@ -39,7 +36,6 @@ export const PostsControllers: PostsControllersInterface = {
   },
   deletePost: async (req: Request, res: Response ): Promise<void> => {
     const { id } : { id?: string } = req.params;
-    console.log('id:', id);
     try {
       const post = await Posts.findByIdAndDelete(id);
       if (post) {
@@ -67,6 +63,23 @@ export const PostsControllers: PostsControllersInterface = {
         res,
         err,
       });
+    }
+  },
+  updatePost: async (req: Request, res: Response ): Promise<void> => {
+    const { id }: { id?: string  } = req.params;
+    const { body }: { body?: string } = req;
+    console.log(body);
+    try {
+      if (Object.keys(body).length === 0) {
+        return handleError({res, msg: '欄位填寫錯誤！'});
+      }
+      const post: PostInterface = await Posts.findByIdAndUpdate(id, body, { new: true } ); 
+      // { new: true } 的設定表示回傳的物件為更新過的內容。 預設值為 false 表示回傳的物件為更新前的內容
+      if ( post ) return handleSuccess<PostInterface>(res, post);
+    } catch (error) {
+      console.log('catch');
+      console.log(error);
+      handleError({res});
     }
   },
 };

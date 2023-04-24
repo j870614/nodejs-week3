@@ -7,7 +7,7 @@ import path from "path";
 // 連結 mongoDB
 import './connections';
 
-import { indexRouter } from "./routes";
+import { postsRouter } from "./routes/posts";
 // **** Variables **** //
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(morgan("dev"));
 
 
 // Add APIs, must be after middleware
-app.use('/', indexRouter);
+app.use('/posts', postsRouter);
 // ** Front-End Content ** //
 
 // Set static directory (js and css)
